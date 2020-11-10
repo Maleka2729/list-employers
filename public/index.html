@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>list employers</title>
+</head>
+
+<body>
+    <div>
+        
+
+        <ul id="employers"></ul>
+
+    </div>
+
+    <script>
+        // defini une nouvelle variable pour la requête
+        var xhttp = new XMLHttpRequest();
+
+        // Appel grâce a l'API les données
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                loadDoc(JSON.parse(this.responseText));
+            }
+        };
+        xhttp.open("GET", "https://jsonplaceholder.typicode.com/posts");
+        xhttp.send();
+
+        // Affiche les valeurs API grâce à la fonction
+        function loadDoc(employers) {
+            employers.forEach(post => {
+                document.getElementById('employers').innerHTML += `
+                    <h4>${post.id}</h4>
+                    <p>${post.title}</p>
+                    <p>${post.body}</p>
+                `;
+            });
+        }
+    </script>
+
+</body>
+
+</html>
