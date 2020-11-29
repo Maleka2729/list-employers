@@ -6,18 +6,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>list employers</title>
 </head>
+<style>
+    form {
+        display: flex;
+    }
+</style>
 
 <body>
     <div>
-        
+        <input type="number" name="" id="post_id">
+        <button id="valid" onclick="searchById()">ENTER</button>
 
-        <ul id="employers"></ul>
+        <form action="#" id="ajouterEmployees">
+            <input type="text" name="title" id="title" placeholder="title">
+            <input type="text" name="body" id="body" placeholder="body">
+            <input type="number" name="postId" id="postId" placeholder="userId">
+            <button onclick="addEmployers()">ADD</button>
+        </form>
 
+        <ul id="employers"> </ul>
     </div>
 
     <script>
         // defini une nouvelle variable pour la requête
         var xhttp = new XMLHttpRequest();
+        xhttp.withCredentials = true;
 
         // Appel grâce a l'API les données
         xhttp.onreadystatechange = function () {
@@ -29,15 +42,78 @@
         xhttp.send();
 
         // Affiche les valeurs API grâce à la fonction
+        // forEach = parcours un tableau, element par element.
         function loadDoc(employers) {
             employers.forEach(post => {
                 document.getElementById('employers').innerHTML += `
                     <h4>${post.id}</h4>
                     <p>${post.title}</p>
                     <p>${post.body}</p>
+                    <button onClick="deleteById(${post.id})">supprimer</button>
                 `;
             });
         }
+
+        // Fonction chercher un element by Id
+        function searchById() {
+            var post_id = document.getElementById("post_id").value;
+            var newUrl = "https://jsonplaceholder.typicode.com/posts/" + post_id;
+
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    ojt = JSON.parse(this.responseText);
+                    document.getElementById('employers').innerHTML = `
+                    <h4>${ojt.id}</h4>
+                    <p>${ojt.title}</p>
+                    <p>${ojt.body}</p>
+                `;
+                }
+            };
+            xhttp.open("GET", newUrl);
+            xhttp.send();
+        }
+
+        // Fonction Delete
+        function deleteById(id) {
+            // nouvelle url en fonction de l'id
+            var newUrl = "https://jsonplaceholder.typicode.com/posts/" + id;
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log("delete succes!")
+                }
+                
+            };
+            xhttp.open("DELETE", newUrl);
+            xhttp.send();
+        };
+
+        // Fonction ajouter un employée via le formulaire
+        function addEmployers() {
+            var newUrl = "https://jsonplaceholder.typicode.com/posts/";
+
+            // recupere les valeurs du formulaire
+            var postId = document.getElementById("ajouterEmployees").elements.namedItem('postId').value;
+            var body = document.getElementById("ajouterEmployees").elements.namedItem('body').value;
+            var title = document.getElementById("ajouterEmployees").elements.namedItem('title').value;
+            xhttp.open("POST", newUrl);
+
+            // envoyer une requete sous format JSON en utilisant xhttp
+            xhttp.setRequestHeader("Content-Type", "application/json");
+
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 201) {
+                    console.log("creation succes!")
+                }
+            };
+
+            // création d'un objet pour un nouvel employé
+            var data = JSON.stringify({
+                "title": title,
+                "body": body,
+                "postId": postId
+            });
+            xhttp.send(data);
+        };
     </script>
 
 </body>
